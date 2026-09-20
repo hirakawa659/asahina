@@ -3,8 +3,9 @@
  */
 export function Settings() {
   return (
-    <div className="p-4">
-      <h2 className="text-lg font-bold">設定</h2>
+    <div className="settings-container">
+      <h2 className="settings-title">設定</h2>
     </div>
   );
 }
+
