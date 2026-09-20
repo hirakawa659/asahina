@@ -1,0 +1,8 @@
+{
+  "name": "Hirakawa",
+  "description": "長文小説の執筆に特化した、高速・軽量な小説執筆エディタ。",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
