@@ -4,7 +4,7 @@
 export type LogCategory = 'navigation' | 'state' | 'storage' | 'editor' | 'lifecycle' | 'error';
 
 class DebugLogger {
-  private isEnabled: boolean = import.meta.env.DEV;
+  private isEnabled: boolean = typeof import.meta !== 'undefined' && Boolean(import.meta.env?.DEV);
 
   log(category: LogCategory, message: string, data?: any) {
     if (!this.isEnabled) return;
