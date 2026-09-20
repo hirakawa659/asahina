@@ -121,6 +121,10 @@ body {
   margin-bottom: 0.75rem;
 }
 
+.debug-section-body.pre-wrap {
+  white-space: pre-wrap;
+}
+
 .debug-button {
   display: inline-flex;
   align-items: center;
