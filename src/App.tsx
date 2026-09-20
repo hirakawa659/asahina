@@ -6,41 +6,56 @@ function App() {
   const state = useAppState();
   const { initialized, view } = state;
 
-  const getDebugReport = () => {
-    return JSON.stringify({
-      timestamp: new Date().toISOString(),
-      environment: {
-        userAgent: navigator.userAgent,
-        platform: navigator.platform,
-        isPWA: window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone,
-        maxTouchPoints: navigator.maxTouchPoints,
-        screen: {
-          width: window.screen.width,
-          height: window.screen.height,
-          availWidth: window.screen.availWidth,
-          availHeight: window.screen.availHeight,
-          devicePixelRatio: window.devicePixelRatio
-        },
-        window: {
-          innerWidth: window.innerWidth,
-          innerHeight: window.innerHeight,
-          outerWidth: window.outerWidth,
-          outerHeight: window.outerHeight
-        },
-        safariVisualViewport: window.visualViewport ? {
-          width: window.visualViewport.width,
-          height: window.visualViewport.height,
-          scale: window.visualViewport.scale
-        } : 'Not Supported'
-      },
-      currentState: state,
-      navigationHistory: state.history,
-      editorStats: {
-        textLength: state.text.length,
-        lastActiveAt: new Date(state.lastActiveAt).toISOString()
-      },
-      localStorageKeys: Object.keys(localStorage)
-    }, null, 2);
+  const getDiagnosticInfo = () => {
+    const isDisplayModeStandalone =
+      typeof window !== 'undefined' && window.matchMedia
+        ? window.matchMedia('(display-mode: standalone)').matches
+        : false;
+    const isIosStandalone =
+      typeof navigator !== 'undefined' && 'standalone' in navigator
+        ? Boolean((navigator as unknown as { standalone?: boolean }).standalone)
+        : false;
+    const isPWA = isDisplayModeStandalone || isIosStandalone;
+
+    const visualViewportInfo =
+      typeof window !== 'undefined' && window.visualViewport
+        ? `${window.visualViewport.width} / ${window.visualViewport.height} / ${window.visualViewport.scale}`
+        : 'Not Supported';
+
+    const textLength =
+      typeof (state as unknown as { text?: unknown }).text === 'string'
+        ? (state as unknown as { text: string }).text.length
+        : 'N/A';
+
+    const lastActiveAtFormatted =
+      typeof (state as unknown as { lastActiveAt?: unknown }).lastActiveAt === 'number'
+        ? `${state.lastActiveAt} (${new Date(state.lastActiveAt).toISOString()})`
+        : 'N/A';
+
+    const localStorageKeys =
+      typeof localStorage !== 'undefined' ? Object.keys(localStorage) : [];
+
+    return `【ブラウザ・環境情報】
+・User Agent: ${typeof navigator !== 'undefined' ? navigator.userAgent : 'N/A'}
+・Platform: ${typeof navigator !== 'undefined' ? navigator.platform : 'N/A'}
+・PWAとして起動しているか: ${isPWA ? 'true' : 'false'}
+  - display-mode: standalone: ${isDisplayModeStandalone}
+  - iOS Safari navigator.standalone: ${isIosStandalone}
+・最大タッチポイント数: ${typeof navigator !== 'undefined' ? navigator.maxTouchPoints : 'N/A'}
+・screen.width / screen.height: ${typeof window !== 'undefined' ? `${window.screen.width} / ${window.screen.height}` : 'N/A'}
+・screen.availWidth / screen.availHeight: ${typeof window !== 'undefined' ? `${window.screen.availWidth} / ${window.screen.availHeight}` : 'N/A'}
+・devicePixelRatio: ${typeof window !== 'undefined' ? window.devicePixelRatio : 'N/A'}
+・window.innerWidth / innerHeight: ${typeof window !== 'undefined' ? `${window.innerWidth} / ${window.innerHeight}` : 'N/A'}
+・window.outerWidth / outerHeight: ${typeof window !== 'undefined' ? `${window.outerWidth} / ${window.outerHeight}` : 'N/A'}
+・visualViewport.width / height / scale: ${visualViewportInfo}
+
+【アプリ状態】
+・state.text の文字数: ${textLength}
+・state.lastActiveAt: ${lastActiveAtFormatted}
+・navigation history: ${Array.isArray((state as unknown as { history?: unknown }).history) ? JSON.stringify(state.history) : 'N/A'}
+・localStorage に存在するキー一覧: ${JSON.stringify(localStorageKeys)}
+・現在のアプリ状態 (全データ):
+${JSON.stringify(state, null, 2)}`;
   };
 
   if (!initialized) {
@@ -58,29 +73,19 @@ function App() {
           <div className="settings-container">
             <h2 className="settings-title">設定</h2>
             <div className="debug-section">
-              <h3 className="debug-section-title">環境情報診断</h3>
+              <h3 className="debug-section-title">🐞 バグ診断</h3>
               <div className="debug-section-body" style={{ whiteSpace: 'pre-wrap' }}>
-                {`起動モード: ${window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone ? '📱 ホーム画面 (PWA)' : '🌐 通常ブラウザ(Safari)'}
-物理画面サイズ: ${window.screen.width} × ${window.screen.height} (比率: ${window.devicePixelRatio})
-表示可能領域: ${window.screen.availWidth} × ${window.screen.availHeight}
-ウィンドウサイズ: ${window.innerWidth} × ${window.innerHeight}${
-                  window.visualViewport
-                    ? `\n拡大率（Viewport Scale）: ${window.visualViewport.scale}`
-                    : ''
-                }
-デバイス種別: ${navigator.maxTouchPoints > 0 ? `Touch対応 (最大 ${navigator.maxTouchPoints} 点)` : '非Touch端末'}
-OS/プラットフォーム: ${navigator.platform}
-UserAgent: ${navigator.userAgent}`}
+                {getDiagnosticInfo()}
               </div>
               <button
                 id="debug-log-report-button"
                 type="button"
                 className="debug-button"
                 onClick={() => {
-                  console.log(getDebugReport());
+                  console.log(getDiagnosticInfo());
                 }}
               >
-                診断レポートをコンソールに出力
+                診断情報をコンソールに出力
               </button>
             </div>
           </div>
