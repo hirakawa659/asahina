@@ -1,10 +1,19 @@
+import { useEffect } from 'react';
 import { Sidebar } from './ui/sidebar';
 import { Editor } from './editor/editor';
 import { useAppState } from './core/state/useAppState';
+import { setupViewportSync } from './utils/viewport';
 
 function App() {
   const state = useAppState();
   const { initialized, view } = state;
+
+  useEffect(() => {
+    const cleanupViewport = setupViewportSync();
+    return () => {
+      cleanupViewport();
+    };
+  }, []);
 
   const getDiagnosticInfo = () => {
     const isDisplayModeStandalone =
