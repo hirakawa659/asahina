@@ -158,8 +158,15 @@ body {
 }
 
 .sidebar-footer {
-  padding: 0.5rem;
+  padding: 0;
   border-top: 1px solid var(--border-color);
+}
+
+.sidebar-footer .sidebar-item {
+  margin-bottom: 0;
+  border-radius: 0;
+  padding: 1.25rem 1rem;
+  padding-bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
 }
 
 /* Editor Styles */
