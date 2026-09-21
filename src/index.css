@@ -153,10 +153,6 @@ body {
   overscroll-behavior-y: contain;
 }
 
-.debug-section-body.pre-wrap {
-  white-space: pre-wrap;
-}
-
 .debug-button {
   flex-shrink: 0;
   display: flex;

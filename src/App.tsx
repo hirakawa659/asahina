@@ -74,7 +74,7 @@ ${JSON.stringify(state, null, 2)}`;
             <h2 className="settings-title">設定</h2>
             <div className="debug-section">
               <h3 className="debug-section-title">🐞 バグ診断</h3>
-              <div className="debug-section-body pre-wrap">
+              <div className="debug-section-body">
                 {getDiagnosticInfo()}
               </div>
               <button
