@@ -1,5 +1,5 @@
 import React from 'react';
-import { Settings, FileText, Trash2, FolderOpen } from 'lucide-react';
+import { FileText, Trash2, FolderOpen } from 'lucide-react';
 import { navigation } from '../core/navigation';
 import { useAppState } from '../core/state/useAppState';
 
@@ -35,10 +35,15 @@ export function Sidebar() {
       </nav>
       <div className="sidebar-footer">
         <SidebarItem 
-          icon={<Settings size={18} />} 
-          label="設定" 
+          label="バグ診断" 
           active={view === 'settings'}
-          onClick={() => navigation.navigate('settings')}
+          onClick={() => {
+            if (view === 'settings') {
+              navigation.navigate('editor');
+            } else {
+              navigation.navigate('settings');
+            }
+          }}
         />
       </div>
     </aside>
@@ -51,7 +56,7 @@ function SidebarItem({
   active = false, 
   onClick 
 }: { 
-  icon: React.ReactNode; 
+  icon?: React.ReactNode; 
   label: string; 
   active?: boolean;
   onClick?: () => void;
