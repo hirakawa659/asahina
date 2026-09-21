@@ -1,5 +1,5 @@
 import { logger } from '../utils/logger';
-import { AppState, createInitialState, sanitizeAppState } from '../core/state/appState';
+import { AppState, AppStateSchema, createInitialState, sanitizeAppState } from '../core/state/appState';
 import { migration } from './migration';
 
 export const STORAGE_KEY_APP_STATE = 'hirakawa_app_state';
@@ -123,8 +123,16 @@ class StorageService {
 
   /**
    * AppState を保存する。
+   * Zod Schema による整合性検証を行ってから保存する。
    */
   async saveAppState(state: AppState, key: string = STORAGE_KEY_APP_STATE): Promise<void> {
+    const validation = AppStateSchema.safeParse(state);
+    if (!validation.success) {
+      logger.error('storage', `Attempted to save invalid AppState for key: ${key}`, {
+        location: 'storage.saveAppState',
+        issues: validation.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`),
+      });
+    }
     await this.save(key, state);
   }
 
